@@ -6,7 +6,7 @@ A Java Client for TavernaServer 2.5.x REST API
 
 ```java
 TavernaClient client = new TavernaClient();
-client.setBaseUri("https://localhost:8080/TavernaServer-2.5.4/rest");
+client.setBaseUri("http://localhost:8080/TavernaServer-2.5.4/rest");
 client.setAuthorization("taverna", "taverna");
 ```
 
