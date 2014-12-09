@@ -12,8 +12,20 @@ client.setAuthorization("taverna", "taverna");
 
 ## Usage
 
-### Create a new Workflow Run
+### Create a new run
 
 ```java
 String uuid = client.create("/Users/vitorfs/Documents/Web_Service_example.t2flow");
+```
+
+### Get run status
+
+```java
+String status = client.getStatus(uuid);
+```
+
+Returns
+
+```bash
+$ Initialized
 ```
