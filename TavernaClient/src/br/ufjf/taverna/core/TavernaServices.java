@@ -24,8 +24,8 @@
 package br.ufjf.taverna.core;
 
 import br.ufjf.taverna.exception.TavernaException;
-import br.ufjf.taverna.model.input.TavernaExpectedInput;
-import br.ufjf.taverna.model.output.TavernaWorkflowOutput;
+import br.ufjf.taverna.model.input.TavernaInput;
+import br.ufjf.taverna.model.output.TavernaOutput;
 import br.ufjf.taverna.model.run.TavernaRun;
 import java.io.File;
 import java.util.ArrayList;
@@ -59,10 +59,10 @@ public interface TavernaServices {
     public String getInput(String uuid) throws TavernaException;
     public String getBaclavaInput(String uuid) throws TavernaException;
     public String setBaclavaInput(String uuid, String file) throws TavernaException;
-    public TavernaExpectedInput getExpectedInputs(String uuid) throws TavernaException;
+    public ArrayList<TavernaInput> getExpectedInputs(String uuid) throws TavernaException;
     public String getInputValue(String uuid, String inputName) throws TavernaException;
     public String setInputValue(String uuid, String inputName, String inputValue) throws TavernaException;
-    public TavernaWorkflowOutput getOutput(String uuid) throws TavernaException;
+    public ArrayList<TavernaOutput> getOutput(String uuid) throws TavernaException;
     public void setBaclavaOutput(String uuid, String file) throws TavernaException;
     public String getListeners(String uuid) throws TavernaException;
     public void setListeners(String uuid, String listener) throws TavernaException;

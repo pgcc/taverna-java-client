@@ -24,10 +24,10 @@
 package br.ufjf.taverna.sample;
 
 import br.ufjf.taverna.core.TavernaClient;
-import br.ufjf.taverna.model.input.TavernaExpectedInput;
 import br.ufjf.taverna.model.input.TavernaInput;
 import br.ufjf.taverna.model.output.TavernaOutput;
 import br.ufjf.taverna.model.output.TavernaWorkflowOutput;
+import java.util.ArrayList;
 
 
 /**
@@ -48,8 +48,6 @@ public class TavernaSample {
             
             String uuid = "";
             String status = "";
-            TavernaExpectedInput tavernaInput = null;
-            TavernaWorkflowOutput tavernaOutput = null;
             
             
             uuid = client.create("/Users/vitorfs/Downloads/Web_Service_example.t2flow");
@@ -67,12 +65,10 @@ public class TavernaSample {
             System.out.println(status);
             
             
-            tavernaInput = client.getExpectedInputs(uuid);
-            if (tavernaInput != null && tavernaInput.getInputDescription() != null && tavernaInput.getInputDescription().getInput() != null) {
-                for (TavernaInput input : tavernaInput.getInputDescription().getInput()) {
-                    if (input != null) {
-                        System.out.println(input.getName());
-                    }
+            ArrayList<TavernaInput> inputs = client.getExpectedInputs(uuid);
+            for (TavernaInput input : inputs) {
+                if (input != null) {
+                    System.out.println(input.getName());
                 }
             }
             
@@ -94,8 +90,8 @@ public class TavernaSample {
             
             
             
-            tavernaOutput = client.getOutput(uuid);
-            for (TavernaOutput output : tavernaOutput.getWorkflowOutputs().getOutput()) {
+            ArrayList<TavernaOutput> tavernaOutput = client.getOutput(uuid);
+            for (TavernaOutput output : tavernaOutput) {
                 System.out.println(output.getName());
             }
             

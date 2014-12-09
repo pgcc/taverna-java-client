@@ -25,6 +25,8 @@ package br.ufjf.taverna.core;
 
 import br.ufjf.taverna.exception.TavernaException;
 import br.ufjf.taverna.model.input.TavernaExpectedInput;
+import br.ufjf.taverna.model.input.TavernaInput;
+import br.ufjf.taverna.model.output.TavernaOutput;
 import br.ufjf.taverna.model.run.TavernaRun;
 import br.ufjf.taverna.model.run.TavernaRuns;
 import br.ufjf.taverna.model.output.TavernaWorkflowOutput;
@@ -128,7 +130,7 @@ public class TavernaClient extends TavernaClientBase implements TavernaServices 
     }
     
     @Override
-    public TavernaExpectedInput getExpectedInputs(String uuid) throws TavernaException {
+    public ArrayList<TavernaInput> getExpectedInputs(String uuid) throws TavernaException {
         String url = String.format("/runs/%s/input/expected", uuid);
         HttpURLConnection response = request(url, TavernaServerMethods.GET, HttpURLConnection.HTTP_OK, "application/json");
         String content = parseResponse(response);
@@ -138,7 +140,10 @@ public class TavernaClient extends TavernaClientBase implements TavernaServices 
         if (response != null) {
             response.disconnect();
         }
-        return input;        
+        if (input != null && input.getInputDescription() != null && input.getInputDescription().getInput() != null) {
+            return input.getInputDescription().getInput();
+        }
+        return new ArrayList<>();
     }
     
     @Override
@@ -161,13 +166,14 @@ public class TavernaClient extends TavernaClientBase implements TavernaServices 
     }
     
     @Override
-    public TavernaWorkflowOutput getOutput(String uuid) throws TavernaException {
+    public ArrayList<TavernaOutput> getOutput(String uuid) throws TavernaException {
         String url = String.format("/runs/%s/output", uuid);
         HttpURLConnection response = request(url, TavernaServerMethods.GET, HttpURLConnection.HTTP_OK, "application/json");
         String content = parseResponse(response);
         content = content.replace("@", "");
         Gson gson = new Gson();
         TavernaWorkflowOutput output = null;
+        
         try {
             output = gson.fromJson(content, TavernaWorkflowOutput.class);
         } catch (JsonSyntaxException e) { // TavernaServer returned only one output tag
@@ -180,7 +186,11 @@ public class TavernaClient extends TavernaClientBase implements TavernaServices 
                 response.disconnect();
             }   
         }
-        return output;
+        
+        if (output != null && output.getWorkflowOutputs() != null && output.getWorkflowOutputs().getOutput() != null) {
+            output.getWorkflowOutputs().getOutput();
+        }
+        return new ArrayList<>();
     }
 
     @Override
