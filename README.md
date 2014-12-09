@@ -51,7 +51,7 @@ client.setStatus(uuid, TavernaServerStatus.FINISHED);
 
 ### Start a run 
 
-shortcut to setStatus with Operating parameter
+Shortcut to setStatus with Operating parameter
 
 ```java
 client.start(uuid);
@@ -59,7 +59,7 @@ client.start(uuid);
 
 ### Cancel a run 
 
-shortcut to setStatus with Finished parameter
+Shortcut to setStatus with Finished parameter
 
 ```java
 client.cancel(uuid);
