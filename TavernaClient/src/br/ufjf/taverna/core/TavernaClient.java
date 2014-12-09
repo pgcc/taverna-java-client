@@ -30,8 +30,10 @@ import br.ufjf.taverna.model.run.TavernaRuns;
 import br.ufjf.taverna.model.output.TavernaWorkflowOutput;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  *
@@ -40,6 +42,7 @@ import java.util.ArrayList;
 public class TavernaClient extends TavernaClientBase implements TavernaServices {
 
     /**
+     * Perform a POST to the TavernaServer endpoint <strong>/runs</strong>
      * @param  filePath the absolute file path of the t2flow file
      * @throws TavernaException in case of invalid response code
      * @return the UUID of the workflow run
@@ -57,6 +60,11 @@ public class TavernaClient extends TavernaClientBase implements TavernaServices 
         return uuid;
     }
     
+    /**
+     * Perform a GET to the TavernaServer endpoint <strong>/runs</strong>
+     * @return an <tt>ArrayList&lt;TavernaRun&gt;</tt> of current runs
+     * @throws TavernaException 
+     */
     @Override
     public ArrayList<TavernaRun> getRuns() throws TavernaException {
         String url = "/runs";
@@ -104,26 +112,19 @@ public class TavernaClient extends TavernaClientBase implements TavernaServices 
     }
     
     @Override
-    public TavernaWorkflowOutput getOutput(String uuid) throws TavernaException {
-        String url = String.format("/runs/%s/output", uuid);
-        HttpURLConnection response = request(url, TavernaServerMethods.GET, HttpURLConnection.HTTP_OK, "application/json");
-        String content = parseResponse(response);
-        content = content.replace("@", "");
-        Gson gson = new Gson();
-        TavernaWorkflowOutput output = null;
-        try {
-            output = gson.fromJson(content, TavernaWorkflowOutput.class);
-        } catch (JsonSyntaxException e) { // TavernaServer returned only one output tag
-            content = content.replace("output", "singleOutput");
-            output = gson.fromJson(content, TavernaWorkflowOutput.class);
-        } catch (Exception e) {
-            
-        } finally {
-            if (response != null) {
-                response.disconnect();
-            }   
-        }
-        return output;
+    public void setStatus(String uuid, TavernaServerStatus status) throws TavernaException {
+        String url = String.format("/runs/%s/status", uuid);
+        String data = status.getStatus();
+        HttpURLConnection response = request(url, TavernaServerMethods.PUT, HttpURLConnection.HTTP_ACCEPTED, "text/plain", "text/plain",  null, data);
+        response.disconnect();        
+    }
+    
+    public void start(String uuid) throws TavernaException {
+        setStatus(uuid, TavernaServerStatus.OPERATING);
+    }
+    
+    public void cancel(String uuid) throws TavernaException {
+        setStatus(uuid, TavernaServerStatus.FINISHED);
     }
     
     @Override
@@ -153,18 +154,258 @@ public class TavernaClient extends TavernaClientBase implements TavernaServices 
     }
     
     @Override
-    public void start(String uuid) throws TavernaException {
-        String url = String.format("/runs/%s/status", uuid);
-        String data = TavernaServerStatus.OPERATING.getStatus();
-        HttpURLConnection response = request(url, TavernaServerMethods.PUT, HttpURLConnection.HTTP_ACCEPTED, "text/plain", "text/plain",  null, data);
-        response.disconnect();
-    }
-    
-    @Override
     public void destroy(String uuid) throws TavernaException {
         String url = String.format("/runs/%s", uuid);
         HttpURLConnection response = request(url, TavernaServerMethods.DELETE, HttpURLConnection.HTTP_NO_CONTENT, null, "application/x-www-form-urlencoded");
         response.disconnect();
+    }
+    
+    @Override
+    public TavernaWorkflowOutput getOutput(String uuid) throws TavernaException {
+        String url = String.format("/runs/%s/output", uuid);
+        HttpURLConnection response = request(url, TavernaServerMethods.GET, HttpURLConnection.HTTP_OK, "application/json");
+        String content = parseResponse(response);
+        content = content.replace("@", "");
+        Gson gson = new Gson();
+        TavernaWorkflowOutput output = null;
+        try {
+            output = gson.fromJson(content, TavernaWorkflowOutput.class);
+        } catch (JsonSyntaxException e) { // TavernaServer returned only one output tag
+            content = content.replace("output", "singleOutput");
+            output = gson.fromJson(content, TavernaWorkflowOutput.class);
+        } catch (Exception e) {
+            
+        } finally {
+            if (response != null) {
+                response.disconnect();
+            }   
+        }
+        return output;
+    }
+
+    @Override
+    public String getEnabledNotificationFabrics() throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getPermittedListenerTypes() throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getPermittedWorkflows() throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getRunLimit() throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSubResources(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getExpiry(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setExpiry(String uuid, Date time) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getCreateTime(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getFinishTime(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Date getStartTime(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public File getWorkflow(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getInput(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getBaclavaInput(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String setBaclavaInput(String uuid, String file) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getInputValue(String uuid, String inputName) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setBaclavaOutput(String uuid, String file) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getListeners(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setListeners(String uuid, String listener) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getListener(String uuid, String listener) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getListenerConfiguration(String uuid, String listener) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getListenerProperties(String uuid, String listener) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getListenerProperty(String uuid, String listener, String propertyName) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurity(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurityCredentials(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setSecurityCredentials(String uuid, String credential) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeSecurityCredentials(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurityCredential(String uuid, String credential) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String updateSecurityCredential(String uuid, String credential, String newCredential) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String removeSecurityCredential(String uuid, String credential) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurityOwner(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurityPermissions(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setSecurityPermissions(String uuid, String userName, String permission) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurityPermission(String uuid, String userName) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurityTrusts(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setSecurityTrusts(String uuid, String certificateFile, String fileType, String certificateBytes) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeSecurityTrusts(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getSecurityTrust(String uuid, String trustId) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void updateSecurityTrust(String uuid, String trustId, String certificateFile, String fileType, String certificateBytes) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeSecurityTrust(String uuid, String trustId) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public File getWorkingDirectoryCompressed(String uuid) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public File getWorkingDirectoryCompressed(String uuid, String filePath) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public String getWorkingDirectoryFileContent(String uuid, String filePath) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setWorkingDirectoryFileContent(String uuid, File file) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void setWorkingDirectoryDirectory(String uuid, String directoryName) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void removeWorkingDirectoryFileOrDirectory(String uuid, String path) throws TavernaException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

@@ -43,7 +43,7 @@ public class TavernaSample {
         //client.setBaseUri("http://localhost:8080/TavernaServer-2.5.4/rest");
         client.setBaseUri("http://ec2-54-191-44-161.us-west-2.compute.amazonaws.com:8080/TavernaServer-2.5.4/rest");
         client.setAuthorization("taverna", "taverna");
-        
+
         try {
             
             String uuid = "";
