@@ -26,7 +26,6 @@ package br.ufjf.taverna.sample;
 import br.ufjf.taverna.core.TavernaClient;
 import br.ufjf.taverna.model.input.TavernaInput;
 import br.ufjf.taverna.model.output.TavernaOutput;
-import br.ufjf.taverna.model.output.TavernaWorkflowOutput;
 import java.util.ArrayList;
 
 
@@ -50,9 +49,10 @@ public class TavernaSample {
             String status = "";
             
             
-            uuid = client.create("/Users/vitorfs/Downloads/Web_Service_example.t2flow");
-            //uuid = client.create("/Users/vitorfs/Downloads/Workflow_Bruno.t2flow");
+            //uuid = client.create("/Users/vitorfs/Downloads/Web_Service_example.t2flow");
+            uuid = client.create("/Users/vitorfs/Downloads/Workflow_Bruno.t2flow");
             System.out.println(uuid);
+            
             
             /*
             ArrayList<TavernaRun> runs = client.getRuns();
@@ -60,7 +60,7 @@ public class TavernaSample {
                 //client.destroy(run.getUuid());
                 System.out.println(run.getUuid());
             }
-            */
+            
             status = client.getStatus(uuid);
             System.out.println(status);
             
@@ -95,7 +95,7 @@ public class TavernaSample {
                 System.out.println(output.getName());
             }
             
-            
+            */
             //client.destroy(uuid);
             
         } catch (Exception e) {
